@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Program Menentukan Rute Perjalanan</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(
+        135deg,
+        #b9e9f5,
+        #82cde5,
+        #d4f3fa,
+        #91d2e9
+    );
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 15px;
+    overflow-x: hidden;
+}
+
+/* Hiasan background */
+.sticker {
+    position: fixed;
+    font-size: 48px;
+    cursor: pointer;
+    user-select: none;
+    animation: melayang 3s ease-in-out infinite;
+    z-index: 0;
+}
+
+.sticker:hover {
+    transform: scale(1.3) rotate(15deg);
+}
+
+.stiker1 { top: 8%; left: 8%; }
+.stiker2 { top: 15%; right: 8%; animation-delay: 1s; }
+.stiker3 { bottom: 12%; left: 10%; animation-delay: 2s; }
+.stiker4 { bottom: 10%; right: 9%; animation-delay: 1.5s; }
+
+@keyframes melayang {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-13px); }
+}
+
+.container {
+    width: 100%;
+    max-width: 520px;
+    background: rgba(255,255,255,0.88);
+    padding: 32px 25px;
+    border-radius: 25px;
+    box-shadow: 0 12px 35px rgba(25,100,130,0.17);
+    position: relative;
+    z-index: 1;
+    border: 2px solid rgba(255,255,255,0.8);
+}
+
+.logo {
+    text-align: center;
+    font-size: 55px;
+    margin-bottom: 8px;
+}
+
+h1 {
+    text-align: center;
+    color: #176b87;
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.deskripsi {
+    text-align: center;
+    color: #64818f;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    color: #28677e;
+    margin-top: 17px;
+    margin-bottom: 8px;
+}
+
+select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #c3e6f0;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #f7fdff;
+    color: #315b6b;
+    outline: none;
+}
+
+select:focus {
+    border-color: #3199bc;
+    box-shadow: 0 0 0 3px rgba(49,153,188,0.12);
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.cari {
+    width: 100%;
+    padding: 15px;
+    margin-top: 25px;
+    border-radius: 13px;
+    background: linear-gradient(120deg, #248cac, #176b87);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 5px 12px rgba(23,107,135,0.2);
+    transition: 0.3s;
+}
+
+.cari:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(120deg, #176b87, #12536d);
+}
+
+#hasil {
+    display: none;
+    margin-top: 23px;
+    padding: 20px;
+    border-radius: 16px;
+    background: #e8f8fc;
+    border: 1px solid #b8e4f0;
+    animation: muncul 0.5s ease;
+}
+
+@keyframes muncul {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#hasil h3 {
+    text-align: center;
+    color: #176b87;
+    margin-bottom: 15px;
+}
+
+.info {
+    color: #426777;
+    line-height: 1.7;
+    margin: 9px 0;
+    font-size: 14px;
+}
+
+.jarak {
+    color: #176b87;
+    font-size: 19px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 12px;
+}
+
+.error {
+    background: #fff0ed !important;
+    border-color: #f2c9c0 !important;
+}
+
+.error h3 {
+    color: #b34e42 !important;
+}
+
+.stiker-kecil {
+    text-align: center;
+    font-size: 30px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+#pesan {
+    text-align: center;
+    color: #176b87;
+    font-size: 12px;
+    margin-top: 8px;
+    min-height: 18px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #64818f;
+    font-size: 13px;
+}
+
+footer b {
+    color: #176b87;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Stiker lucu interaktif -->
+<div class="sticker stiker1" onclick="pesanStiker('Hai! Selamat datang! 🐬')">🐬</div>
+<div class="sticker stiker2" onclick="pesanStiker('Semangat menjelajah! 🐳')">🐳</div>
+<div class="sticker stiker3" onclick="pesanStiker('Jangan lupa menikmati perjalanan! 🐚')">🐚</div>
+<div class="sticker stiker4" onclick="pesanStiker('Semoga perjalananmu menyenangkan! ⭐')">⭐</div>
+
+<div class="container">
+
+    <div class="logo">🌊🚗</div>
+
+    <h1>Program Menentukan Rute Perjalanan</h1>
+
+    <p class="deskripsi">
+        Yuk, tentukan perjalananmu!
+        Pilih kota asal dan kota tujuan untuk mengetahui
+        rute perjalanan serta jarak terpendek.
+    </p>
+
+    <label for="asal">📍 Kota Asal</label>
+
+    <select id="asal">
+        <option value="">-- Pilih Kota Asal --</option>
+    </select>
+
+    <label for="tujuan">🏁 Kota Tujuan</label>
+
+    <select id="tujuan">
+        <option value="">-- Pilih Kota Tujuan --</option>
+    </select>
+
+    <button class="cari" onclick="cariRute()">
+        🔍 Cari Rute Perjalanan
+    </button>
+
+    <!-- Hasil pencarian -->
+    <div id="hasil">
+        <h3 id="judul">✨ Hasil Perjalanan ✨</h3>
+        <p class="info" id="jalur"></p>
+        <p class="jarak" id="jarak"></p>
+    </div>
+
+    <div class="stiker-kecil" onclick="pesanStiker('Terima kasih sudah menggunakan program ini! 💙')">
+        🐠 🫧 🐙
+    </div>
+
+    <div id="pesan"></div>
+
+    <footer>
+        Dibuat dengan 💙 oleh<br>
+        <b>Sulpikawati</b>
+    </footer>
+
+</div>
+
+<script>
+
+// Daftar 12 kota di Sulawesi Selatan
+const kota = [
+    "Makassar",
+    "Maros",
+    "Gowa",
+    "Takalar",
+    "Jeneponto",
+    "Bantaeng",
+    "Bulukumba",
+    "Sinjai",
+    "Bone",
+    "Soppeng",
+    "Barru",
+    "Parepare"
+];
+
+// Data hubungan antar kota
+// Jarak tambahan merupakan data simulasi pembelajaran.
+const jalan = [
+    {a:"Bantaeng", b:"Bulukumba", km:60},
+    {a:"Bulukumba", b:"Makassar", km:65},
+    {a:"Makassar", b:"Barru", km:102},
+    {a:"Barru", b:"Parepare", km:53},
+    {a:"Makassar", b:"Maros", km:30},
+    {a:"Makassar", b:"Gowa", km:15},
+    {a:"Gowa", b:"Takalar", km:40},
+    {a:"Takalar", b:"Jeneponto", km:65},
+    {a:"Jeneponto", b:"Bantaeng", km:45},
+    {a:"Bulukumba", b:"Sinjai", km:70},
+    {a:"Sinjai", b:"Bone", km:110},
+    {a:"Bone", b:"Soppeng", km:70},
+    {a:"Soppeng", b:"Barru", km:90}
+];
+
+// Memasukkan daftar kota ke pilihan
+const asalSelect = document.getElementById("asal");
+const tujuanSelect = document.getElementById("tujuan");
+
+kota.forEach(nama => {
+    asalSelect.add(new Option(nama, nama));
+    tujuanSelect.add(new Option(nama, nama));
+});
+
+// Algoritma Dijkstra
+function dijkstra(asal, tujuan) {
+
+    let graf = {};
+
+    kota.forEach(nama => {
+        graf[nama] = [];
+    });
+
+    jalan.forEach(r => {
+        graf[r.a].push({
+            kota: r.b,
+            jarak: r.km
+        });
+
+        graf[r.b].push({
+            kota: r.a,
+            jarak: r.km
+        });
+    });
+
+    let jarak = {};
+    let sebelumnya = {};
+    let belum = new Set(kota);
+
+    kota.forEach(nama => {
+        jarak[nama] = Infinity;
+    });
+
+    jarak[asal] = 0;
+
+    while (belum.size > 0) {
+
+        let sekarang = null;
+
+        for (let nama of belum) {
+            if (
+                sekarang === null ||
+                jarak[nama] < jarak[sekarang]
+            ) {
+                sekarang = nama;
+            }
+        }
+
+        if (
+            sekarang === null ||
+            jarak[sekarang] === Infinity
+        ) {
+            break;
+        }
+
+        if (sekarang === tujuan) {
+            break;
+        }
+
+        belum.delete(sekarang);
+
+        graf[sekarang].forEach(tetangga => {
+
+            if (!belum.has(tetangga.kota)) return;
+
+            let alternatif =
+                jarak[sekarang] + tetangga.jarak;
+
+            if (alternatif < jarak[tetangga.kota]) {
+
+                jarak[tetangga.kota] = alternatif;
+
+                sebelumnya[tetangga.kota] = sekarang;
+            }
+        });
+    }
+
+    if (jarak[tujuan] === Infinity) {
+        return null;
+    }
+
+    let jalur = [];
+    let saatIni = tujuan;
+
+    while (saatIni !== asal) {
+        jalur.unshift(saatIni);
+        saatIni = sebelumnya[saatIni];
+
+        if (!saatIni) return null;
+    }
+
+    jalur.unshift(asal);
+
+    return {
+        jalur: jalur.join(" → "),
+        jarak: jarak[tujuan]
+    };
+}
+
+// Fungsi mencari rute
+function cariRute() {
+
+    let asal = asalSelect.value;
+    let tujuan = tujuanSelect.value;
+
+    let hasil = document.getElementById("hasil");
+    let jalur = document.getElementById("jalur");
+    let jarak = document.getElementById("jarak");
+    let judul = document.getElementById("judul");
+
+    hasil.style.display = "block";
+    hasil.classList.remove("error");
+
+    if (!asal || !tujuan) {
+
+        hasil.classList.add("error");
+        judul.innerText = "Oops! 😅";
+        jalur.innerText =
+            "Silakan pilih kota asal dan kota tujuan terlebih dahulu.";
+        jarak.innerText = "";
+
+        return;
+    }
+
+    if (asal === tujuan) {
+
+        hasil.classList.add("error");
+        judul.innerText = "Coba pilih kota lain! 💙";
+        jalur.innerText =
+            "Kota asal dan tujuan tidak boleh sama.";
+        jarak.innerText = "";
+
+        return;
+    }
+
+    let hasilRute = dijkstra(asal, tujuan);
+
+    if (hasilRute) {
+
+        judul.innerText = "✨ Rute Berhasil Ditemukan! ✨";
+
+        jalur.innerText =
+            "📍 Jalur perjalanan: " + hasilRute.jalur;
+
+        jarak.innerText =
+            "📏 " + hasilRute.jarak + " km";
+
+    } else {
+
+        hasil.classList.add("error");
+        judul.innerText = "Rute belum tersedia";
+        jalur.innerText =
+            "Maaf, jalur perjalanan belum tersedia.";
+        jarak.innerText = "";
+    }
+}
+
+// Interaksi stiker
+function pesanStiker(teks) {
+    document.getElementById("pesan").innerText = teks;
+}
+
+</script>
+
+</body>
+</html>
